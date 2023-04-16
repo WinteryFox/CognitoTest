@@ -10,7 +10,6 @@ fun main() {
     val clientId = System.getenv("CLIENT_ID")
     val clientSecret = System.getenv("CLIENT_SECRET")
 
-    val helper = DeviceHelper()
     val provider: AWSCognitoIdentityProvider = AWSCognitoIdentityProviderClientBuilder
         .standard()
         .withCredentials(
@@ -34,7 +33,7 @@ fun main() {
                 mapOf(
                     "USERNAME" to email,
                     "PASSWORD" to password,
-                    "SECRET_HASH" to helper.secretHash(clientId, email, clientSecret)
+                    "SECRET_HASH" to secretHash(clientId, email, clientSecret)
                 )
             )
             .withClientId(clientId)
@@ -43,7 +42,11 @@ fun main() {
 
     val deviceGroupKey = auth.authenticationResult.newDeviceMetadata.deviceGroupKey
     val deviceKey = auth.authenticationResult.newDeviceMetadata.deviceKey
-    val config = helper.passwordVerifierConfig(deviceGroupKey, deviceKey)
+    val helper = DeviceHelper(
+        deviceKey,
+        deviceGroupKey
+    )
+    val config = helper.passwordVerifierConfig()
     println("device key: $deviceKey")
     println("device group key: $deviceGroupKey")
     println("device password: ${config.devicePassword}")

@@ -14,6 +14,18 @@ fun main() {
     val clientId = System.getenv("CLIENT_ID")
     val clientSecret = System.getenv("CLIENT_SECRET")
 
+    val email = System.getenv("EMAIL")
+    val password = System.getenv("PASSWORD")
+
+    val deviceKey = System.getenv("DEVICE_KEY")
+    val deviceGroupKey = System.getenv("DEVICE_GROUP_KEY")
+    val devicePassword = System.getenv("DEVICE_PASSWORD")
+
+    val helper = DeviceHelper(
+        deviceKey,
+        deviceGroupKey
+    )
+
     val provider: AWSCognitoIdentityProvider = AWSCognitoIdentityProviderClientBuilder
         .standard()
         .withCredentials(
@@ -27,14 +39,6 @@ fun main() {
         .withRegion(Regions.EU_CENTRAL_1)
         .build()
 
-    val email = System.getenv("EMAIL")
-    val password = System.getenv("PASSWORD")
-    val deviceKey = System.getenv("DEVICE_KEY")
-    val deviceGroupKey = System.getenv("DEVICE_GROUP_KEY")
-    val devicePassword = System.getenv("DEVICE_PASSWORD")
-
-    val helper = DeviceHelper()
-
     val auth = provider.adminInitiateAuth(
         AdminInitiateAuthRequest()
             .withAuthFlow(AuthFlowType.ADMIN_USER_PASSWORD_AUTH)
@@ -42,7 +46,7 @@ fun main() {
                 mapOf(
                     "USERNAME" to email,
                     "PASSWORD" to password,
-                    "SECRET_HASH" to helper.secretHash(clientId, email, clientSecret),
+                    "SECRET_HASH" to secretHash(clientId, email, clientSecret),
                     "DEVICE_KEY" to deviceKey
                 )
             )
@@ -64,7 +68,7 @@ fun main() {
                     "DEVICE_KEY" to deviceKey,
                     "USERNAME" to email,
                     "SRP_A" to helper.srpa(),
-                    "SECRET_HASH" to helper.secretHash(
+                    "SECRET_HASH" to secretHash(
                         clientId,
                         email,
                         clientSecret
@@ -87,8 +91,6 @@ fun main() {
                     "PASSWORD_CLAIM_SECRET_BLOCK" to deviceSrpAuth.challengeParameters["SECRET_BLOCK"]!!,
                     "TIMESTAMP" to timestamp,
                     "PASSWORD_CLAIM_SIGNATURE" to helper.passwordClaimSignature(
-                        deviceGroupKey,
-                        deviceKey,
                         devicePassword,
                         deviceSrpAuth.challengeParameters["SRP_B"]!!,
                         deviceSrpAuth.challengeParameters["SALT"]!!,
@@ -96,7 +98,7 @@ fun main() {
                         deviceSrpAuth.challengeParameters["SECRET_BLOCK"]!!
                     ),
                     "DEVICE_KEY" to deviceKey,
-                    "SECRET_HASH" to helper.secretHash(
+                    "SECRET_HASH" to secretHash(
                         clientId,
                         deviceSrpAuth.challengeParameters["USERNAME"]!!,
                         clientSecret
@@ -107,5 +109,5 @@ fun main() {
             .withClientId(clientId)
             .withSession(deviceSrpAuth.session)
     )
-    println(devicePasswordVerifier.challengeName)
+    println(devicePasswordVerifier.authenticationResult)
 }
