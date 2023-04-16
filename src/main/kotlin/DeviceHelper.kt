@@ -1,4 +1,3 @@
-import org.apache.commons.codec.binary.Hex
 import java.lang.RuntimeException
 import java.math.BigInteger
 import java.nio.charset.Charset
@@ -96,8 +95,6 @@ class DeviceHelper(
     }
 
     fun srpa(): String = HexFormat.of().formatHex(A.toByteArray())
-    //fun srpa(): String =
-    //    "cbde222efb3d6ec4bdf9242548bcffb6a0dc6753ded43b5e9bc6ab466d6c3aa2dd57d5c03662df7d744bb3b4fb83563d80576312cffe26c5b3ba6b11cb12d4e0aa39351932a82d4ea8f643aad4c57600904d25169af3e483a52f9d4fe803d5d7738137acf04e444d3de88c97452904e621182b019b1c307ec630d92ad8bfaf27f5dd027a457bc13528d95a475a3283ad33edb40b98d87758c98a4ee82335ed5c5f1f5538aa825f89cf6067449a226e0ad231a4251116ec9fabdd92b83979e14eea3846125a96c0f26d40404d516967de15f1d14226d44d667f955a1d74388092544530dc4f8838934d470114e67f758a310ced531ba1098c5a69892d47e83b60c62b03981e8956240c8e6400bc4adf0ad2528247d092626294682216d7377e308e4ba1a502772a3ac901e570892d581ee988b6f538903059e10ce7b18a5176e6ed7d6ae8349b3938f66667f4fcab2fb7de82fc4c3a51845442750ca1e27c60a30bdd3686f3f98ddacf65b3df167df8cc4867cf06118ad13da1b749f1afa71f2e"
 
     fun passwordVerifierConfig(): PasswordVerifier {
         // RANDOM_PASSWORD = 40 random bytes, base64-encoded
